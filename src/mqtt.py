@@ -29,7 +29,10 @@ print(wlan.ifconfig())
 
 # Read analog temperature
 sensor = machine.ADC(4)
-conversion_factor = 3.3 / 65535                
+conversion_factor = 3.3 / 65535
+
+# LED
+led = machine.Pin("LED", machine.Pin.OUT)
 
 # MQTT and TLS settings
 CLIENT_ID = "myclientid"

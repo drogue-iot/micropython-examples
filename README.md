@@ -110,7 +110,7 @@ For more information about connection applications to MQTT or WebSockets, have a
 To send a command back to the device, you can use the `drg command` command:
 
 ``` yaml
-drg command --app <app> -p '{"state":"on"}' <device> pico
+drg command --app <app> -p '{"led":"on"}' <device> pico
 ```
 
 Replace `<app>` and `<device>` with the Drogue Cloud application and device you're sending the command to. The `pico` keyword corresponds to the channel the device is sending telemetry to, using the default from the example is fine.

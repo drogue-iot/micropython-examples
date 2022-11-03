@@ -5,6 +5,7 @@ import ussl
 import gc
 import urequests
 import ubinascii
+import json
 
 # Customize these if you're not using the sandbox
 HOST = "http.sandbox.drogue.cloud"
@@ -38,18 +39,29 @@ print(wlan.ifconfig())
 sensor = machine.ADC(4)
 conversion_factor = 3.3 / 65535
 
+# LED
+led = machine.Pin("LED", machine.Pin.OUT)
+
 while True:
     data = sensor.read_u16() * conversion_factor
     # Conversion from datasheet
     temperature = 27 - (data - 0.706) / 0.001721
-    payload = b"{\"temp\":" + str(temperature) + b"}"
+    payload = json.dumps({"temp": temperature})
 
     print("Reporting sensor data: ", payload)
     response = urequests.post(URL, data=payload, headers=headers)
     if len(response.content) > 0:
-        print("Got command", str(response.content))
-    response.close()
+        try:
+            state = json.loads(response.content)
+            print("Got command", str(state))
+            if state['led'] == "on":
+                led.on()
+            else:
+                led.off()
+        except Exception as e:
+            print("Error parsing command", e)
 
+    response.close()
     # Ensures micropython doesn't run out of memory
     gc.collect()
     # time.sleep(5)

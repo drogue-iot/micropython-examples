@@ -54,7 +54,7 @@ drg login https://api.sandbox.drogue.cloud
 
 This will open a browser window where you can log in using your GitHub account.
 
-Next, create the application and device with credentials (replace example-app with whatver application you wish to use):
+Next, create the application and device with credentials (replace `example-app` and `device1` with the application name and device name you want to use):
 
 ```
 drg create application example-app
@@ -69,9 +69,9 @@ Use the [mqtt.py](src/mqtt.py) example if you want to use MQTT, or [http.py](htt
 
 * WIFI\_SSID - You local wifi access point SSID.
 * WIFI\_PSK - You local wifi access point key.
-* APPLICATION - The Drogue Cloud application you'll be using.
-* DEVICE - The Drogue Cloud device you'll be authenticating as.
-* PASSWORD - The device credentials you've entered previously.
+* APPLICATION - The Drogue Cloud application name.
+* DEVICE - The Drogue Cloud device name.
+* PASSWORD - The device credentials.
 * (Optional) `HOST` - If you're using a server different from the Drogue Cloud sandbox, change this.
 * (Optional) `PORT` - If you're using a server different from the Drogue Cloud sandbox, change this.
 
@@ -118,6 +118,10 @@ Replace `<app>` and `<device>` with the Drogue Cloud application and device you'
 For more information about sending commands to device
 
 ## Troubleshooting
+
+### I'm getting a Conflict when creating the application and/or device
+
+Application names are global, which means that if someone else has already created this application on the Drogue Cloud instance, it is already taken and you need to choose a different name.
 
 ### I'm sending commands but the device does not print them
 

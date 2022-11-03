@@ -33,7 +33,7 @@ conversion_factor = 3.3 / 65535
 
 # MQTT and TLS settings
 CLIENT_ID = "myclientid"
-TOPIC = b"foo"
+TOPIC = b"pico"
 ssl_params = {
     "server_hostname": HOST,
     "cert_reqs": ussl.CERT_NONE,

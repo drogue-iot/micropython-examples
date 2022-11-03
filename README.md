@@ -77,13 +77,23 @@ Use the [mqtt.py](src/mqtt.py) example if you want to use MQTT, or [http.py](htt
 
 ## Running the application
 
-Use the `mpremote` command to run the example:
+Use the `mpremote` command to run the examples:
+
+For MQTT:
 
 ``` yaml
 mpremote run src/mqtt.py
 ```
 
+For HTTP:
+
+``` yaml
+mpremote run src/http.py
+```
+
 Logs from your application will appear in the console, and the device should start to publish the temperature once it's connected.
+
+To learn more about how to send data to Drogue Cloud, have a look at the [endpoint documentation](https://book.drogue.io/drogue-cloud/dev/user-guide/endpoint-http.html).
 
 ## Streaming the data
 
@@ -93,6 +103,23 @@ You can consume the data from Drogue Cloud using MQTT or WebSockets, but for the
 drg stream --application example-app
 ```
 
+For more information about connection applications to MQTT or WebSockets, have a look at [the documentation](https://book.drogue.io/drogue-cloud/dev/user-guide/integration.html).
+
+## Sending commands
+
+To send a command back to the device, you can use the `drg command` command:
+
+``` yaml
+drg command --app <app> -p '{"state":"on"}' <device> pico
+```
+
+Replace `<app>` and `<device>` with the Drogue Cloud application and device you're sending the command to. The `pico` keyword corresponds to the channel the device is sending telemetry to, using the default from the example is fine.
+
+For more information about sending commands to device
+
 ## Troubleshooting
 
-...
+### I'm sending commands but the device does not print them
+
+For the device to accept commands, it must be connected to the endpoint when the command is sent. Drogue Cloud does not queue the commands for the device, since in a typical IoT application you need to provide the
+'response' to the command at the application layer anyway.

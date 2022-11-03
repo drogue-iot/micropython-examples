@@ -9,7 +9,7 @@ import ubinascii
 # Customize these if you're not using the sandbox
 HOST = "http.sandbox.drogue.cloud"
 PORT = 443
-URL = "https://" + HOST + ":" + str(PORT) + "/v1/foo"
+URL = "https://" + HOST + ":" + str(PORT) + "/v1/pico?ct=10"
 
 # TODO: You _must_ edit these settings
 APPLICATION = "" # "example-app"
@@ -29,7 +29,7 @@ wlan.active(True)
 wlan.connect(WIFI_SSID, WIFI_PSK)
 
 while not wlan.isconnected() and wlan.status() >= 0:
-    print("Waiting to connect:")
+    print("Waiting to connect...")
     time.sleep(1)
 
 print(wlan.ifconfig())
@@ -47,7 +47,9 @@ while True:
     print("Reporting sensor data: ", payload)
     response = urequests.post(URL, data=payload, headers=headers)
     if len(response.content) > 0:
-        print("Response", str(response.content))
+        print("Got command", str(response.content))
     response.close()
+
+    # Ensures micropython doesn't run out of memory
     gc.collect()
-    time.sleep(10)
+    # time.sleep(5)

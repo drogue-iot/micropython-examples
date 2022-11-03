@@ -7,6 +7,16 @@ Examples on how to use Drogue Cloud with micropython! There are two examples:
 
 Both of them read some sensor data and reports this data periodically. The device also accepts commands for turning on or off an on-board LED.
 
+The overall architecture looks like this:
+
+``` yaml
++--------+                      +--------------+                    +-----+
+| Device | <-- MQTT or HTTP --> | Drogue Cloud | <-- MQTT or WS --> | App |
++--------+                      +--------------+                    +-----+
+```
+
+As the "App", we'll be using the `drg` command line utility, but you can use any MQTT or WebSocket-cabable client.
+
 ## Prerequisites 
 
 ### Hardware

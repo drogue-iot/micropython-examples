@@ -37,9 +37,9 @@ Install [micropython](https://www.raspberrypi.com/documentation/microcontrollers
 
 Keep your device powered for a few seconds until micropython has been flashed to the device.
 
-### PC tools
+### Command line tools
 
-On your PC/Mac, you need the following tools installed:
+On your computer connected to the board, you need the following tools installed:
 
 * `drg` - Download the [latest release](https://github.com/drogue-iot/drg/releases) for your platform.
 * `mpremote` - Run `pip3 install mpremote` (assumes you have Python installed)

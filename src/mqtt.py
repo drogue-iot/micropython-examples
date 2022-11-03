@@ -3,6 +3,8 @@ import time
 import machine
 import ussl
 import gc
+import json
+import time
 from umqtt.simple import MQTTClient
 
 # Customize these if you're not using the sandbox
@@ -42,6 +44,17 @@ ssl_params = {
     "cert_reqs": ussl.CERT_NONE,
 }
 
+# Callback
+def command(topic, msg):
+    try:
+        print("Got command", str(msg))
+        state = json.loads(msg)
+        if state['led'] == "on":
+            led.on()
+        else:
+            led.off()
+    except Exception as e:
+        print("Error parsing command", e)
 
 client = MQTTClient(CLIENT_ID,
                     server=HOST,
@@ -51,15 +64,24 @@ client = MQTTClient(CLIENT_ID,
                     ssl=True,
                     ssl_params=ssl_params)
 
+client.set_callback(command)
 print("Connecting to MQTT...")
 client.connect()
+client.subscribe("command/inbox//#")
 
 print("Connected to MQTT, sending sensor data every 10 seconds")
 while True:
+    # Ensures micropython doesn't run out of memory
+    gc.collect()
+
     data = sensor.read_u16() * conversion_factor  
     # Conversion from datasheet
     temperature = 27 - (data - 0.706) / 0.001721
-    payload = b"{\"temp\":" + str(temperature) + b"}"
+    payload = json.dumps({"temp": temperature})
+
+    print("Publishing payload " + str(payload))
     client.publish(TOPIC, payload)
-    gc.collect()
-    time.sleep(10)
+    end = time.time() + 10
+    while time.time() < end:
+        client.check_msg()
+        time.sleep_ms(10)

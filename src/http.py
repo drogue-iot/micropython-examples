@@ -3,11 +3,13 @@ import time
 import machine
 import ussl
 import gc
-from umqtt.simple import MQTTClient
+import urequests
+import ubinascii
 
 # Customize these if you're not using the sandbox
-HOST = "mqtt.sandbox.drogue.cloud"
+HOST = "http.sandbox.drogue.cloud"
 PORT = 443
+URL = "https://" + HOST + ":" + str(PORT) + "/v1/foo"
 
 # TODO: You _must_ edit these settings
 APPLICATION = "" # "example-app"
@@ -16,9 +18,14 @@ PASSWORD = "" # "hey-rodney"
 WIFI_SSID = ""
 WIFI_PSK = ""
 
+
+headers = {}
+headers['Content-Type'] = 'application/json'
+headers['Authorization'] = 'Basic ' + ubinascii.b2a_base64(DEVICE + "@" + APPLICATION + ":" + PASSWORD).decode('utf-8').strip()
+# print("Headers", str(headers))
+
 wlan = network.WLAN(network.STA_IF)
 wlan.active(True)
-
 wlan.connect(WIFI_SSID, WIFI_PSK)
 
 while not wlan.isconnected() and wlan.status() >= 0:
@@ -29,34 +36,18 @@ print(wlan.ifconfig())
 
 # Read analog temperature
 sensor = machine.ADC(4)
-conversion_factor = 3.3 / 65535                
+conversion_factor = 3.3 / 65535
 
-# MQTT and TLS settings
-CLIENT_ID = "myclientid"
-TOPIC = b"foo"
-ssl_params = {
-    "server_hostname": HOST,
-    "cert_reqs": ussl.CERT_NONE,
-}
-
-
-client = MQTTClient(CLIENT_ID,
-                    server=HOST,
-                    user=DEVICE + "@" + APPLICATION,
-                    password=PASSWORD,
-                    port=PORT,
-                    ssl=True,
-                    ssl_params=ssl_params)
-
-print("Connecting to MQTT...")
-client.connect()
-
-print("Connected to MQTT, sending sensor data every 10 seconds")
 while True:
-    data = sensor.read_u16() * conversion_factor  
+    data = sensor.read_u16() * conversion_factor
     # Conversion from datasheet
     temperature = 27 - (data - 0.706) / 0.001721
     payload = b"{\"temp\":" + str(temperature) + b"}"
-    client.publish(TOPIC, payload)
+
+    print("Reporting sensor data: ", payload)
+    response = urequests.post(URL, data=payload, headers=headers)
+    if len(response.content) > 0:
+        print("Response", str(response.content))
+    response.close()
     gc.collect()
     time.sleep(10)

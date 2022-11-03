@@ -1,32 +1,50 @@
-# micropython-example
+# micropython-examples
 
 Examples on how to use Drogue Cloud with micropython! There are two examples:
 
 * [HTTP](src/http.py)
 * [MQTT](src/mqtt.py)
 
-Both of them read some sensor data and reports this data periodically. The device also accepts
-commands for turning on or off an on-board LED.
+Both of them read some sensor data and reports this data periodically. The device also accepts commands for turning on or off an on-board LED.
 
 ## Prerequisites 
 
 ### Hardware
 
-For this example, we're using [Raspberry Pi Pico W](), but it should work on any board that can run
+For this example, we're using [Raspberry Pi Pico W](https://www.raspberrypi.com/products/raspberry-pi-pico/), but it should work on any board that can run
 micropython, provided you modify the hardware-specific sensor reading.
+
+Have a look at [this reference](https://docs.micropython.org/en/latest/rp2/quickref.html) to learn more on how to interact with the peripherals.
 
 ## Software
 
-Install [micropython]() on your device. Circuitpython should also work, but may require some
-changes.
+### Micropython
+
+Install [micropython](https://www.raspberrypi.com/documentation/microcontrollers/micropython.html) on your device:
+
+* Plug in your board, a USB storage device should appear
+* Copy the .uf2 file for your board onto the USB storage device
+
+Keep your device powered for a few seconds until micropython has been flashed to the device.
+
+### PC tools
 
 On your PC/Mac, you need the following tools installed:
 
-* `drg` - Download the [latest release]() for your platform.
+* `drg` - Download the [latest release](https://github.com/drogue-iot/drg/releases) for your platform.
+* `mpremote` - Run `pip3 install mpremote` (assumes you have Python installed)
 
-These instructions assume that you'll be using the [Drogue Cloud Sandbox](https://sandbox.drogue.cloud), but you can also [install Drogue Cloud]() yourself.
+#### Installing dependencies
+
+To run the MQTT example, you need to install the MQTT client library as well:
+
+``` yaml
+mpremote mip install umqtt.simple
+```
 
 ## Configuring Drogue Cloud
+
+These instructions assume that you'll be using the [Drogue Cloud Sandbox](https://sandbox.drogue.cloud), but you can also [install Drogue Cloud](https://book.drogue.io/drogue-cloud/dev/admin-guide/index.html) yourself.
 
 Log in to the sandbox (or another Drogue Cloud instance):
 
@@ -36,7 +54,7 @@ drg login https://api.sandbox.drogue.cloud
 
 This will open a browser window where you can log in using your GitHub account.
 
-Next, create the application and device with credentials:
+Next, create the application and device with credentials (replace example-app with whatver application you wish to use):
 
 ```
 drg create application example-app
@@ -59,12 +77,17 @@ Use the [mqtt.py](src/mqtt.py) example if you want to use MQTT, or [http.py](htt
 
 ## Running the application
 
-Connect your device, and copy your application to the device. You can view the debug output
-connecting the serial device that appears when you've connected your device.
+Use the `mpremote` command to run the example:
+
+``` yaml
+mpremote run src/mqtt.py
+```
+
+Logs from your application will appear in the console, and the device should start to publish the temperature once it's connected.
 
 ## Streaming the data
 
-You can consume the data using MQTT or WebSockets, but for the sake of simplicity you can use the `drg` tool for that as well:
+You can consume the data from Drogue Cloud using MQTT or WebSockets, but for the sake of simplicity you can use the `drg` tool for that as well:
 
 ```
 drg stream --application example-app
